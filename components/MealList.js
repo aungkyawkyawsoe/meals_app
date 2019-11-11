@@ -1,22 +1,30 @@
 import React from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import MealItem from "./MealItem";
+import { View, FlatList, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 
-function MealList(props) {
+import MealItem from './MealItem';
+
+const MealList = props => {
+    const favoriteMeals = useSelector(state => state.meals.favoriteMeals);
+
     const renderMealItem = itemData => {
+        const isFavorite = favoriteMeals.some(meal => meal.id === itemData.item.id);
         return (
             <MealItem
                 title={itemData.item.title}
+                image={itemData.item.imageUrl}
                 duration={itemData.item.duration}
                 complexity={itemData.item.complexity}
                 affordability={itemData.item.affordability}
-                image={itemData.item.imageUrl}
-                onSelectMeal={()=> {
+                onSelectMeal={() => {
                     props.navigation.navigate({
-                        routeName: 'MealDetail', params: {
-                            mealId: itemData.item.id
+                        routeName: 'MealDetail',
+                        params: {
+                            mealId: itemData.item.id,
+                            mealTitle: itemData.item.title,
+                            isFav: isFavorite
                         }
-                    })
+                    });
                 }}
             />
         );
@@ -27,12 +35,12 @@ function MealList(props) {
             <FlatList
                 data={props.listData}
                 keyExtractor={(item, index) => item.id}
-                renderItem={ renderMealItem }
+                renderItem={renderMealItem}
                 style={{ width: '100%' }}
             />
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     list: {
